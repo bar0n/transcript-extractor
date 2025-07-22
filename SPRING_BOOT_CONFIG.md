@@ -1,22 +1,19 @@
 # Spring Boot Project Configuration - YouTube Transcript Extractor
 
-## Project Overview
-This is a Spring Boot application for extracting YouTube video transcripts, following modern Java development practices and enterprise-grade standards.
+## 1. Project Overview
+This is a Spring Boot application that uses Spring Shell to create a command-line interface (CLI) for extracting YouTube video transcripts. It is built with Java 24 and follows modern, enterprise-grade development practices.
 
-## Technology Stack
-- **Java**: 24 (Latest)
+## 2. Technology Stack
+- **Java**: 24
 - **Spring Boot**: 3.4.1
-- **Spring Framework**: 6.2.x
-- **Spring Shell**: 3.2.8 (CLI interface instead of REST)
+- **Spring Shell**: 3.2.8 (for the CLI)
 - **Build Tool**: Maven 3.9.x
-- **Database**: H2 (for development/testing) - PostgreSQL for production
 - **HTTP Client**: OkHttp 4.12.0
 - **HTML Parsing**: JSoup 1.17.2
-- **YouTube API**: Google APIs v3-rev20240814
+- **YouTube API**: Google APIs v3
 - **Testing**: JUnit 5, Mockito
-- **Documentation**: Built-in help system via Spring Shell
 
-## Current Project Structure
+## 3. Project Structure
 ```
 src/main/java/com/danvega/transcripts/
 ├── TranscriptExtractorApplication.java    # Main Spring Boot application
@@ -30,214 +27,173 @@ src/main/java/com/danvega/transcripts/
     └── TranscriptCommands.java            # Spring Shell commands (@ShellComponent)
 ```
 
-## Essential Commands for This Project
+## 4. Commands
 
 ### Build & Run
-- Build project: `mvn clean compile`
-- Run tests: `mvn test`
-- Run application: `mvn spring-boot:run`
-- Package JAR: `mvn clean package`
+- **Build Project**: `mvn clean compile`
+- **Run Tests**: `mvn test`
+- **Package JAR**: `mvn clean package`
+- **Run Application**: `mvn spring-boot:run`
 
-### Application Usage (Spring Shell)
-- Start application: `mvn spring-boot:run`
-- Extract transcript: `extract-transcript --video-id dQw4w9WgXcQ`
-- Get help: `transcript-help`
-- Exit shell: `exit`
+### Application Usage (CLI)
+- **Start Shell**: `mvn spring-boot:run`
+- **Extract Transcript**: `extract-transcript --video-id "dQw4w9WgXcQ"`
+- **Get Help**: `help` or `extract-transcript --help`
+- **Exit Shell**: `exit`
 
-### Code Quality (To be implemented)
-- Run tests with coverage: `mvn test jacoco:report`
-- Static analysis: `mvn spotbugs:check`
-- Dependency check: `mvn dependency:analyze`
+## 5. Configuration
 
-## Current Configuration
+### `application.yml`
+The primary configuration is located in `src/main/resources/application.yml`.
 
-### Application Configuration (application.yml)
 ```yaml
 youtube:
   api:
-    key: ${YOUTUBE_API_KEY:your-api-key-here}
+    key: ${YOUTUBE_API_KEY:your-api-key-here} # Fallback for local development
 
 spring:
-  profiles:
-    active: dev
+  main:
+    banner-mode: "off"
   
 logging:
   level:
-    com.danvega.transcripts: INFO
-    org.springframework.shell: WARN
+    com:
+      danvega:
+        transcripts: INFO
+    org:
+      springframework:
+        shell: WARN
 ```
 
 ### Environment Variables
-- `YOUTUBE_API_KEY` - Your YouTube Data API v3 key (required)
+- `YOUTUBE_API_KEY`: Your YouTube Data API v3 key (required for API-based extraction).
 
-## Coding Standards Applied
+### Type-Safe Configuration (Recommended Practice)
+For more robust validation, use `@ConfigurationProperties`. This approach provides validation, autocompletion in the IDE, and strong typing.
 
-### Spring Boot Best Practices ✅
-- **Constructor Injection**: Used in `TranscriptService` and `TranscriptCommands`
-- **Layered Architecture**: Shell Commands → Service → External APIs
-- **Externalized Configuration**: YouTube API key via environment variables
-- **Proper Exception Handling**: Comprehensive try-catch blocks with logging
-
-### Current Annotations Usage
-- **Shell Commands**: `@ShellComponent` + `@ShellMethod`
-- **Services**: `@Service` for business logic
-- **Configuration**: `@Configuration` + `@PostConstruct` for validation
-- **Dependency Injection**: Constructor-based injection throughout
-
-### Spring Shell Specific Patterns
-- **Command Methods**: Use `@ShellMethod` with clear descriptions
-- **Option Parameters**: Use `@ShellOption` for command parameters
-- **Help Integration**: Built-in help system with descriptive method names
-- **Input Validation**: Parameter validation in shell commands
-
-## Security Guidelines Applied
-
-### Current Security Measures ✅
-- **API Key Protection**: Environment variable usage, not hardcoded
-- **Input Validation**: Video ID format validation
-- **HTTP Security**: Proper headers and user agents for web scraping
-- **Error Handling**: No sensitive data exposure in error messages
-
-### Additional Security Considerations
-- **Rate Limiting**: Implement for YouTube API calls
-- **Request Throttling**: Add delays between multiple requests
-- **SSL/TLS**: Enforce HTTPS for all external API calls
-
-## Testing Standards Implemented
-
-### Current Test Structure ✅
-- **Unit Tests**: `TranscriptServiceUnitTest` - Mocked dependencies
-- **Integration Tests**: `TranscriptServiceTest` - Spring Boot context
-- **Service Layer Tests**: Comprehensive coverage of transcript extraction
-- **Mock External Services**: YouTube API calls properly mocked
-
-### Test Patterns Used
+**Example:**
 ```java
-@ExtendWith(MockitoExtension.class)  // Unit tests
-@SpringBootTest                       // Integration tests
-@Mock private YouTubeTranscriptExtractor  // Mocking dependencies
-```
-
-## API Integration Guidelines
-
-### YouTube API Best Practices ✅
-- **API Key Management**: Secure environment variable storage
-- **Error Handling**: Graceful degradation when API fails
-- **Fallback Strategy**: Multiple extraction methods implemented
-- **Rate Limiting**: Conscious of API quotas
-
-### HTTP Client Patterns ✅
-- **OkHttp Usage**: Modern HTTP client with proper configuration
-- **Request Headers**: Appropriate user agents and headers
-- **Response Parsing**: Multiple format support (XML, VTT, TTML)
-- **Connection Management**: Proper resource cleanup
-
-## Performance Considerations
-
-### Current Optimizations ✅
-- **Fallback Strategy**: Primary method doesn't consume API quota
-- **Multiple Format Support**: Try different caption formats
-- **Efficient Parsing**: JSoup for HTML/XML parsing
-- **Resource Management**: Proper InputStream handling
-
-### Future Performance Improvements
-- **Caching**: Implement transcript caching with `@Cacheable`
-- **Async Processing**: Use `@Async` for bulk operations
-- **Connection Pooling**: Configure OkHttp connection pooling
-- **Batch Processing**: Process multiple videos efficiently
-
-## Development Workflow for This Project
-
-### Current Status ✅
-1. ✅ Basic project structure established
-2. ✅ Single video transcript extraction working
-3. ✅ Comprehensive test suite implemented
-4. ✅ Git repository initialized and pushed to GitHub
-5. ✅ Documentation and configuration completed
-
-### Next Development Steps (From PLAN.md)
-1. **Channel Processing**: Implement Dan Vega channel video extraction
-2. **PDF Generation**: Add transcript to PDF conversion
-3. **Docker Support**: Create Dockerfile and docker-compose.yml
-4. **Batch Processing**: Multiple video processing capabilities
-5. **Enhanced Error Handling**: More sophisticated retry mechanisms
-
-## Spring Shell Specific Best Practices
-
-### Command Design ✅
-- **Clear Command Names**: `extract-transcript`, `transcript-help`
-- **Descriptive Help Text**: Each command has helpful descriptions
-- **Parameter Validation**: Input validation for video IDs
-- **User Feedback**: Informative success/error messages
-
-### Shell Integration Patterns
-```java
-@ShellMethod(value = "Extract transcript from YouTube video", key = "extract-transcript")
-public String extractTranscript(@ShellOption(help = "YouTube video ID") String videoId) {
-    // Implementation with proper error handling
-}
-```
-
-## Configuration Management
-
-### Current Configuration Strategy ✅
-- **Environment-based**: Different configs for dev/prod
-- **API Key Security**: External environment variable
-- **Validation**: `@PostConstruct` validation for required configs
-- **Logging**: Structured logging with appropriate levels
-
-### Configuration Classes
-```java
+// Add "spring-boot-configuration-processor" to pom.xml for metadata generation
 @Configuration
-public class YouTubeApiConfig {
-    @Value("${youtube.api.key}")
-    private String apiKey;
-    
-    @PostConstruct
-    public void validateConfiguration() {
-        // Validation logic
+@ConfigurationProperties(prefix = "youtube")
+@Validated // Enables validation annotations
+public class YouTubeProperties {
+
+    @Valid
+    private final Api api = new Api();
+
+    public Api getApi() {
+        return api;
+    }
+
+    public static class Api {
+        @NotBlank // Fails startup if the key is missing
+        private String key;
+
+        // Getters and Setters
     }
 }
 ```
 
-## Important Notes for This Project
+## 6. Coding & Testing Standards
 
-### Current Limitations & Considerations
-- **YouTube Protection**: Some videos may block transcript extraction
-- **API Quotas**: YouTube Data API has daily limits
-- **Format Variations**: Different caption formats require different parsing
-- **Rate Limiting**: Be respectful to YouTube's servers
+### Dependency Injection
+- **Constructor Injection**: Used exclusively to ensure beans are created with all required dependencies.
 
-### Architecture Decisions Made
-- **Spring Shell over REST**: CLI interface for better user interaction
-- **Dual Strategy**: Web scraping + API fallback for better success rate
-- **Java 24**: Latest Java features and performance improvements
-- **OkHttp**: Modern HTTP client for reliable web requests
+### Layered Architecture
+- **Shell**: `TranscriptCommands` (handles user input)
+- **Service**: `TranscriptService` (contains business logic)
+- **Client**: `YouTubeTranscriptExtractor` (handles external communication)
 
-## Monitoring & Observability
+### Testing
+- **Unit Tests**: Located in `src/test/java`, they test components in isolation with mocked dependencies (e.g., `TranscriptServiceUnitTest`).
+- **Integration Tests**: Test the Spring context and bean interactions (e.g., `TranscriptServiceTest`).
 
-### Current Logging ✅
-- **SLF4J**: Structured logging throughout application
-- **Log Levels**: Appropriate INFO/WARN/ERROR levels
-- **Contextual Information**: Video IDs and error details in logs
+```java
+// Unit Test Example
+@ExtendWith(MockitoExtension.class)
+class TranscriptServiceUnitTest {
+    @Mock
+    private YouTubeTranscriptExtractor extractor;
+    @InjectMocks
+    private SimpleYouTubeTranscriptService service;
 
-### Future Monitoring Enhancements
-- **Spring Boot Actuator**: Health checks and metrics
-- **Custom Metrics**: Success/failure rates for extractions
-- **Performance Metrics**: Response times and API usage
+    @Test
+    void testExtraction() {
+        // ... test logic
+    }
+}
 
-## Common Patterns Applied
+// Integration Test Example
+@SpringBootTest
+class TranscriptServiceTest {
+    @Autowired
+    private TranscriptService service;
 
-### Design Patterns Used ✅
-- **Strategy Pattern**: Multiple transcript extraction strategies
-- **Template Method**: Consistent error handling across services
-- **Dependency Injection**: Spring's IoC container throughout
-- **Command Pattern**: Spring Shell command structure
+    @Test
+    void contextLoads() {
+        // ... test logic
+    }
+}
+```
 
-### Anti-patterns Avoided ✅
-- **No Field Injection**: Constructor injection used consistently
-- **No Hardcoded Values**: All configuration externalized
-- **No Static Methods**: Proper Spring bean management
-- **No Fat Services**: Single responsibility principle maintained
+## 7. Future Enhancements & Best Practices
 
-This configuration guide reflects the current state of your YouTube Transcript Extractor project while providing a roadmap for future enhancements following Spring Boot best practices.
+### Performance: Caching
+To avoid re-fetching the same transcript, you can implement caching.
+
+1.  **Add Dependency**: Add `spring-boot-starter-cache` to `pom.xml`.
+2.  **Enable Caching**: Add `@EnableCaching` to a `@Configuration` class.
+3.  **Use `@Cacheable`**: Annotate the service method.
+
+```java
+@Service
+public class TranscriptService {
+    @Cacheable(value = "transcripts", key = "#videoId")
+    public TranscriptResult extractTranscript(String videoId) {
+        // ... extraction logic
+    }
+}
+```
+
+### Performance: Virtual Threads
+For improved performance on I/O-bound tasks (like API calls), enable virtual threads (requires Java 21+).
+
+**`application.yml`:**
+```yaml
+spring:
+  threads:
+    virtual:
+      enabled: true
+```
+
+### Containerization: Docker
+To package the application as a container image, create a `Dockerfile`.
+
+```dockerfile
+# Use a slim, modern Java base image
+FROM bellsoft/liberica-openjdk-alpine:24
+
+# Set up a non-root user for security
+RUN addgroup -g 1001 appgroup && \
+    adduser -u 1001 -G appgroup -s /bin/sh -D appuser
+
+WORKDIR /app
+
+# Copy dependency layers first for better Maven caching
+COPY --chown=appuser:appgroup target/dependency/ ./
+COPY --chown=appuser:appgroup target/classes/ ./
+
+USER appuser
+EXPOSE 8080
+
+# Run the application
+ENTRYPOINT ["java", "-cp", ".:lib/*", "com.danvega.transcripts.TranscriptExtractorApplication"]
+```
+
+### Code Quality
+Consider adding Maven plugins to your `pom.xml` to enforce code quality.
+- **Static Analysis**: `spotbugs-maven-plugin`
+- **Code Coverage**: `jacoco-maven-plugin`
+
+```
